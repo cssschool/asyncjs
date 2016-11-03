@@ -46,6 +46,7 @@ public class WeatherServer {
     private void defineServices(Chain services) {
         services.get("temperature/:name", ctx -> {
             final String city = ctx.getPathTokens().get("name");
+            System.out.println("getting temp for:"+ city);
             final CompletionStage<BigDecimal> result = weatherService.getTemperature(city,
                     LocalDate.now
                             ());

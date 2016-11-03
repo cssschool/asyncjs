@@ -1,35 +1,50 @@
-var weatherService = (function(){
+var weatherService = (function () {
 
     function getTemperature(city) {
-        $.get("/services/temperature/"+city).done(function(data) {
-            console.log("got:" + data);
-        });
-        return 25.5;
+        var result = new Promise(
+            function (resolve, reject) {
+                $.get("/services/temperature/" + city).done(function (data) {
+                    resolve(data);
+                });
+            }
+        );
+        return result;
+
     }
 
     function getTransport(city) {
-        $.get("/services/transport/"+city).done(function(data) {
-            console.log("got:" + data);
-        });
-        return 250;
+        var result = new Promise(
+            function (resolve, reject) {
+                $.get("/services/transport/" + city).done(function (data) {
+                    resolve(data);
+                });
+            }
+        );
+        return result;
     }
 
-    function getSatisfaction (city) {
-        return Math.abs(getTemperature(city)-25)*50 + getTransport(city);
+    function getSatisfaction(city) {
+        return Promise
+            .all( [getTemperature(city), getTransport(city)])
+            .then( function(values) {
+                var temp = parseFloat(values[0]);
+                var transp = parseInt(values[1],10);
+
+                var tempDiff = Math.abs(25.5 - temp);
+                return  tempDiff*50 + transp;
+        });
+
     }
 
     function searchCities(search) {
         var result = new Promise(
-            // The resolver function is called with the ability to resolve or
-            // reject the promise
-            function(resolve, reject) {
-                $.get("/services/cities/"+search).done(function(data) {
+            function (resolve, reject) {
+                $.get("/services/cities/" + search).done(function (data) {
                     console.log("got:" + data);
                     resolve(JSON.parse(data));
                 });
             }
         );
-
         return result;
     }
 

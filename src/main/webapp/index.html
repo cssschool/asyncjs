@@ -1,11 +1,12 @@
 <html>
 <head>
     <title>My weather</title>
+    <link rel="stylesheet" type="text/css" href="css/spinner.css">
 </head>
 <body>
 <section class="inputs">
     <label for="city">City</label>
-    <input type="text" id="city">
+    <input type="text" id="city" data-state="normal"><div class="spinner">&nbsp;</div>
 </section>
 <section class="results">
     <table>
@@ -19,17 +20,11 @@
 <script type="text/tim" class="resultTable">
  <table>
  {{cities}}
-    <tr>
-    <td>
+    <tr data-cityname="{{city}}">
+    <td >
      {{city}}
     </td>
-    <td>
-        {{temperature}}
-    </td>
-    <td>
-        {{transport}} CHF
-    </td>
-    <td>
+    <td class="satisfaction spinning">
         {{satisfaction}}
     </td>
     </tr>
