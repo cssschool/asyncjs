@@ -1,0 +1,49 @@
+<html>
+<head>
+    <title>test</title>
+</head>
+<body>
+<section class="inputs">
+    <label for="city">City</label>
+    <input type="text" id="city">
+</section>
+<section class="results">
+    <table>
+        <tr>
+            <td></td>
+        </tr>
+    </table>
+</section>
+
+
+<script type="text/tim" class="resultTable">
+ <table>
+ {{cities}}
+    <tr>
+    <td>
+     {{city}}
+    </td>
+    <td>
+        {{temperature}}
+    </td>
+    <td>
+        {{transport}} CHF
+    </td>
+    <td>
+        {{satisfaction}}
+    </td>
+    </tr>
+    {{/cities}}
+ </table>
+</script>
+
+<script src="js/lib/zepto.js"></script>
+<script src="js/lib/callbacks.js"></script>
+<script src="js/lib/deferred.js"></script>
+<script src="js/lib/tim.js"></script>
+<script src="js/weatherService.js"></script>
+<script src="js/weatherController.js"></script>
+
+
+</body>
+</html>
