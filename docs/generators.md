@@ -157,3 +157,12 @@ Nun wird es etwas kniffliger. Um das genannte zu erreichen, braucht man eine Fun
 	}
 ```	
 
+Zuerst wird der Generator "instanziert". In der `handle`-Funktion geschieht die Magie. Diese prüft zuerst ob bei dem übergebenen 
+Result der Boolean done auf true steht und gibt, falls ja, ein `Promise.resolve(result.value)` zurück. Dies hat zur Folge, dass die 
+ganze Asny-Funktion beendet wird.
+Wenn nein, wird ebenfalls ein Promise erzeugt, welches wiederum beim resolven oder bei einem Fehler die handle Funktion aufruft 
+mit dem fehler oder dem erfolgreichen Result.
+Initial wird die `handle`-Funktion mit dem ersten `generator.next()`-Result aufgerufen. Im Falle eines Fehlers wird die Promise
+rejected. 
+Wichtig bei dem Vorgehen ist jedoch, dass man nur Promises bei einem yield verwendet, da ansonsten die `.then`-Methode nicht vorhanden
+ist.
