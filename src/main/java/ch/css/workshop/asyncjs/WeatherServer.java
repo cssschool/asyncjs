@@ -44,10 +44,10 @@ public class WeatherServer {
     }
 
     private void defineServices(Chain services) {
-        services.get("temperature/:name", ctx -> {
-            final String city = ctx.getPathTokens().get("name");
-            System.out.println("getting temp for:"+ city);
-            final CompletionStage<BigDecimal> result = weatherService.getTemperature(city,
+        services.get("temperature/:id", ctx -> {
+            final Long cityId = Long.parseLong(ctx.getPathTokens().get("id"));
+            System.out.println("getting temp for:"+ cityId);
+            final CompletionStage<BigDecimal> result = weatherService.getTemperature(cityId,
                     LocalDate.now
                             ());
             final CompletionStage<String> stringRes = result.thenApply(dec ->dec.toPlainString());
@@ -56,7 +56,7 @@ public class WeatherServer {
             });
             ctx.render(promise);
         })
-                .get("transport/:name", ctx -> {
+                .get("transport/:id", ctx -> {
                     ctx.render("200");
                 })
                 .get("cities/:search", ctx ->  {
@@ -66,7 +66,6 @@ public class WeatherServer {
                             .thenApply(list->
                                     Politician.beatAroundTheBush( ()->ctx.get(ObjectMapper.class).writer().writeValueAsString(list)));
                     final Promise promise = Promise.async(downstream -> {
-
                         downstream.accept(result);
                     });
                     ctx.render(promise);

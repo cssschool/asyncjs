@@ -1,9 +1,9 @@
 var weatherService = (function () {
 
-    function getTemperature(city) {
+    function getTemperature(cityId) {
         var result = new Promise(
             function (resolve, reject) {
-                $.get("/services/temperature/" + city).done(function (data) {
+                $.get("/services/temperature/" + cityId).done(function (data) {
                     resolve(data);
                 });
             }
@@ -12,10 +12,10 @@ var weatherService = (function () {
 
     }
 
-    function getTransport(city) {
+    function getTransport(cityId) {
         var result = new Promise(
             function (resolve, reject) {
-                $.get("/services/transport/" + city).done(function (data) {
+                $.get("/services/transport/" + cityId).done(function (data) {
                     resolve(data);
                 });
             }
@@ -23,9 +23,9 @@ var weatherService = (function () {
         return result;
     }
 
-    function getSatisfaction(city) {
+    function getSatisfaction(cityId) {
         return Promise
-            .all( [getTemperature(city), getTransport(city)])
+            .all( [getTemperature(cityId), getTransport(cityId)])
             .then( function(values) {
                 var temp = parseFloat(values[0]);
                 var transp = parseInt(values[1],10);

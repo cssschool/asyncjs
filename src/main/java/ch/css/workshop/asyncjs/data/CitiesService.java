@@ -1,9 +1,15 @@
 package ch.css.workshop.asyncjs.data;
 
 import javaslang.Lazy;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.collection.List;
+import javaslang.collection.Map;
+import javaslang.collection.HashMap;
 import javaslang.concurrent.Future;
 import javaslang.control.Option;
+
+
 
 public class CitiesService {
 
@@ -11,16 +17,28 @@ public class CitiesService {
 
     private final Lazy<Future<List<CityData>>> allCities;
 
+    private final Lazy<Future<Map<Long,CityData>>> citiesByKey;
+
     public CitiesService(final String fileName) {
         this.reader = new CitiesDataReader(fileName);
         this.allCities = Lazy.of(()->reader.getCities());
-    }
-    public Future<List<CityData>> searchCities(final String search) {
-     return allCities.map( futur-> futur.map( list -> list.filter( city->city.city.contains(search)))).get();
+        this.citiesByKey = Lazy.of ( () -> allCities.get().map(list->
+            HashMap.ofEntries( list.zipWithIndex().map(tuple -> Tuple.of(tuple._2, tuple._1)))
+        ));
     }
 
-    public Future<Option<CityData>> getCity(final String cityName) {
-        return allCities.map( futur-> futur.map( list -> list.filter( city->city.city.equals(cityName)).headOption())).get();
+    private List<Tuple2<Long,CityData>> toList(Map<Long,CityData> cities) {
+        return List.ofAll(cities.iterator());
+    }
+
+    public Future<List<Tuple2<Long, CityData>>> searchCities(final String search) {
+     return citiesByKey.map(
+             futur-> futur.map(
+                     map->toList(map.filter(tuple -> tuple._2.city.contains(search)) ))).get();
+    }
+
+    public Future<Option<CityData>> getCity(final long cityId) {
+        return citiesByKey.map( futur-> futur.map( m->m.get(cityId))).get();
     }
 
 }

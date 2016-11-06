@@ -11,14 +11,17 @@
             inputElement.attr('data-state','load');
             service.searchCities(this.value)
                 .then(function (cities) {
-                    var fullData = cities.map( function(city) {
-                        service.getSatisfaction(city.city).then( function(data){
-                            var tdElem = $(".results [data-cityname='"+city.city+"'] td.satisfaction");
+                    var fullData = cities.map( function(cityIn) {
+                        var cityId = cityIn[0];
+                        var cityData = cityIn[1];
+                        service.getSatisfaction(cityId).then( function(data){
+                            var tdElem = $(".results [data-cityname='"+cityId+"'] td.satisfaction");
                             tdElem.text(data);
                             tdElem.removeClass("spinning");
                         });
-                        city.satisfaction =  "?";
-                        return city;
+                        cityData.satisfaction =  "?";
+                        cityData.id =  cityId;
+                        return cityData;
                     });
                     var result = tim("resultTable", {cities: fullData});
 
