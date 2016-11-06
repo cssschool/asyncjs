@@ -17,9 +17,9 @@ import java.util.concurrent.CompletionStage;
 
 public class WeatherServer {
 
-    private final SlowWeatherService weatherService = new SlowWeatherService();
-
     private final CitiesService cityService = new CitiesService("/data/worldcitiespop.txt");
+
+    private final SlowWeatherService weatherService = new SlowWeatherService(cityService);
 
     public static void main(String... args) throws Exception {
         final WeatherServer server = new WeatherServer();
