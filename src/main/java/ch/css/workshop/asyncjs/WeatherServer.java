@@ -1,14 +1,15 @@
 package ch.css.workshop.asyncjs;
 
 import ch.css.workshop.asyncjs.data.CitiesService;
-import ch.css.workshop.asyncjs.data.CityData;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javaslang.collection.List;
 import javaslang.jackson.datatype.JavaslangModule;
 import pl.setblack.badass.Politician;
 import ratpack.exec.Promise;
+import ratpack.func.Action;
 import ratpack.handling.Chain;
+import ratpack.registry.RegistrySpec;
 import ratpack.server.RatpackServer;
+import ratpack.server.ServerConfigBuilder;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -27,15 +28,14 @@ public class WeatherServer {
     }
 
     private void start() throws Exception {
-        final File  baseDir = new File("src/main/webapp").getAbsoluteFile();
-         System.out.println("base dir=" + baseDir);
+
         RatpackServer.start(server -> server
-                .serverConfig(c ->c.baseDir(baseDir))
-                .registryOf(r->r.add( new ObjectMapper().registerModule(new JavaslangModule())))
+                .serverConfig(this::setBaseDirectory)
+                .registryOf(this::registerJavaSlangMapper)
                 .handlers(chain -> chain
-                        .prefix("files", stat -> stat.files(f->f.dir("/").indexFiles("index.html"))
+                        .prefix("files", stat -> stat.files(f -> f.dir("/").indexFiles("index.html"))
                         )
-                        .prefix ("services", services -> {
+                        .prefix("services", services -> {
                             defineServices(services);
                         })
 
@@ -43,14 +43,23 @@ public class WeatherServer {
         );
     }
 
+    private ServerConfigBuilder setBaseDirectory(ServerConfigBuilder c) {
+        final File baseDir = new File("src/main/webapp").getAbsoluteFile();
+        return c.baseDir(baseDir);
+    }
+
+    private void registerJavaSlangMapper( RegistrySpec r) {
+        r.add(new ObjectMapper().registerModule(new JavaslangModule()));
+    }
+
     private void defineServices(Chain services) {
         services.get("temperature/:id", ctx -> {
             final Long cityId = Long.parseLong(ctx.getPathTokens().get("id"));
-            System.out.println("getting temp for:"+ cityId);
+            System.out.println("getting temp for:" + cityId);
             final CompletionStage<BigDecimal> result = weatherService.getTemperature(cityId,
                     LocalDate.now
                             ());
-            final CompletionStage<String> stringRes = result.thenApply(dec ->dec.toPlainString());
+            final CompletionStage<String> stringRes = result.thenApply(dec -> dec.toPlainString());
             final Promise promise = Promise.async(downstream -> {
                 downstream.accept(stringRes);
             });
@@ -59,12 +68,12 @@ public class WeatherServer {
                 .get("transport/:id", ctx -> {
                     ctx.render("200");
                 })
-                .get("cities/:search", ctx ->  {
+                .get("cities/:search", ctx -> {
                     final String search = ctx.getPathTokens().get("search");
-                    final CompletionStage<String> result=  CFConverter
+                    final CompletionStage<String> result = CFConverter
                             .toCompletable(cityService.searchCities(search))
-                            .thenApply(list->
-                                    Politician.beatAroundTheBush( ()->ctx.get(ObjectMapper.class).writer().writeValueAsString(list)));
+                            .thenApply(list ->
+                                    Politician.beatAroundTheBush(() -> ctx.get(ObjectMapper.class).writer().writeValueAsString(list)));
                     final Promise promise = Promise.async(downstream -> {
                         downstream.accept(result);
                     });
