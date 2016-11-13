@@ -38,12 +38,8 @@ public class CitiesService {
     }
 
     public Future<Option<CityData>> getCity(final long cityId) {
-        final long startTime = System.currentTimeMillis();
         return citiesByKey.map( futur-> futur.map( m->{
-
             Option<CityData> result = m.get(cityId);
-            final long endTime = System.currentTimeMillis();
-            System.out.println("search city time: "+ (endTime-startTime) +"ms");
             return result;
         })).get();
     }

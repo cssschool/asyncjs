@@ -31,7 +31,7 @@ public class WeatherServer {
 
    private final TravelService travelService = new TravelService(cityService);
 
-   private final Destabilizer destabilizer = new Destabilizer(0, 0.0, 0.0);
+   private final Destabilizer destabilizer = new Destabilizer(100, 0.05, 0.01);
 
 
 
@@ -61,7 +61,8 @@ public class WeatherServer {
       final File baseDir = new File("src/main/webapp").getAbsoluteFile();
 
       return c.baseDir(baseDir)
-         .threads(50);
+         .threads(1000)
+              .development(false);
    }
 
    private void registerJavaSlangMapper(RegistrySpec r) {
@@ -100,16 +101,16 @@ public class WeatherServer {
    }
 
    private final Function<String, CompletionStage<List<Tuple2<Long, CityData>>>> slowCityService = destabilizer
-      .makeAsyncSlowAndUnstable(
+      .makeSlowAndUnstable(
          (String search) -> CFConverter
             .toCompletable(cityService.searchCities(search)));
 
    private final Function<Long, CompletionStage<String>> slowWeatherService = destabilizer
-      .makeAsyncSlowAndUnstable(
+      .makeSlowAndUnstable(
          (Long cityId) -> weatherService.getTemperature(cityId, LocalDate.now()).thenApply(BigDecimal::toPlainString));
 
    private final Function<Long, CompletionStage<String>> slowTravelService = destabilizer
-      .makeAsyncSlowAndUnstable(
+      .makeSlowAndUnstable(
          (Long cityId) -> travelService.getTravelCost(cityId, LocalDate.now()).thenApply(BigDecimal::toPlainString));
 
 

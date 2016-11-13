@@ -23,7 +23,6 @@ public class SlowWeatherService {
         final double distToEq = Math.abs(90 - city.latitude) / 90.0;
         final double distSQ = Math.pow(distToEq, 0.3);
         final double temp = distSQ*60.0-30.0;
-        Politician.beatAroundTheBush(()->Thread.sleep(1000));
         return new BigDecimal(temp).setScale(2, RoundingMode.HALF_UP);
     }
 

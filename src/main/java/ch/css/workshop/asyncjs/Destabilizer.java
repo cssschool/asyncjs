@@ -1,17 +1,12 @@
 package ch.css.workshop.asyncjs;
 
 
+import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
 import pl.setblack.badass.Politician;
 
 import java.math.BigDecimal;
 import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Function;
 
 public class Destabilizer {
@@ -21,7 +16,7 @@ public class Destabilizer {
 
    private final  double stuckProbability;
 
-   private final ThreadPoolExecutor myExecutor = createExecutor();
+   private final ThreadPoolExecutor executor = createExecutor();
 
    public Destabilizer(long standardDelay, double failureProbability, double stuckProbability) {
       this.standardDelay = standardDelay;
@@ -29,44 +24,38 @@ public class Destabilizer {
       this.stuckProbability = stuckProbability;
    }
 
-   public <INPUT, RESULT > Function<INPUT, CompletionStage<RESULT>> makeBlockingSlowAndUnstable(Function<INPUT,
-      RESULT> func) {
-      return makeAsyncSlowAndUnstable(( INPUT inp ) -> {
-         final CompletableFuture<RESULT> result = new CompletableFuture<>();
-         myExecutor.execute(() -> {
-               result.complete(func.apply(inp));
-            }
-         );
-         return result;
-      });
-   }
 
-   public <INPUT, RESULT > Function<INPUT, CompletionStage<RESULT>> makeAsyncSlowAndUnstable(Function<INPUT,
+
+   public <INPUT, RESULT > Function<INPUT, CompletionStage<RESULT>> makeSlowAndUnstable(Function<INPUT,
       CompletionStage<RESULT>>
                                                                              func) {
-      return (INPUT inp) -> func.apply(inp).thenApply( val -> {
+      return (INPUT inp) -> func.apply(inp).thenComposeAsync( val -> {
+         final CompletableFuture<RESULT> result = new CompletableFuture<>();
+
          if ( standardDelay > 0) {
-            System.out.println("start wait in" + Thread.currentThread().getId());
             Politician.beatAroundTheBush(() -> Thread.sleep(getPoissonRandom(standardDelay)));
-            System.out.println("end wait in" + Thread.currentThread().getId());
          }
          if  (failureProbability > 0) {
             if ( ThreadLocalRandom.current().nextDouble() < failureProbability ) {
                throw new RuntimeException("just planned failure");
             }
          }
-         return val;
-      } );
+
+         if  (!(stuckProbability > 0 && ThreadLocalRandom.current().nextDouble() < stuckProbability )) {
+            result.complete(val);
+         }
+         return result;
+      }, executor );
    }
 
 
 
    private ThreadPoolExecutor createExecutor() {
-      BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(
-         100);
-      ThreadPoolExecutor executorService = new ThreadPoolExecutor(100, 150, 30,
+      BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(
+         20);
+      ThreadPoolExecutor executorService = new ThreadPoolExecutor(100, 1050, 30,
          TimeUnit.SECONDS, queue,
-         new ThreadPoolExecutor.AbortPolicy());
+         new ThreadPoolExecutor.CallerRunsPolicy());
       return executorService;
    }
 
