@@ -4,7 +4,7 @@ var weatherService = (function () {
         perGradCost : 20
     };
 
-
+    $.ajaxSettings.timeout = 20000;
 
     function getTemperature(cityId) {
         var result = new Promise(
@@ -41,7 +41,10 @@ var weatherService = (function () {
                 var transp = parseInt(values[1],10);
 
                 var tempDiff = Math.abs(params.idealTemperature - temp);
-                return  tempDiff*params.perGradCost + transp;
+                console.log("ed:"+ tempDiff);
+                var result =   (tempDiff*params.perGradCost + transp).toFixed(2);
+                console.log("res:"+ result);
+                return result;
         });
 
     }

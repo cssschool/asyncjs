@@ -9,11 +9,11 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.concurrent.*;
 
-public class SlowWeatherService {
+public class WeatherService {
 
     private final CitiesService citiesService;
 
-    public SlowWeatherService(CitiesService citiesService) {
+    public WeatherService(CitiesService citiesService) {
         this.citiesService = citiesService;
     }
 

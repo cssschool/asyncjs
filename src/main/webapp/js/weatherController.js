@@ -5,31 +5,29 @@
 
     var stdCities = [
         {id: '635499', city:"London"},
-        {id: '1480982', city:"Warsaw"},
+       /* {id: '1480982', city:"Warsaw"},
         {id: '99363', city:"Rome"},
         {id: '1636821', city:"Moscow"},
         {id: '607047', city:"Paris"},
-        {id: '651950', city:"Athenes"}
+        {id: '651950', city:"Athenes"}*/
     ];
 
     $(".results").html(tim("resultTable", {cities: []}));
 
     function onChangedInputs() {
-
         var tempInputSource = Rx.Observable.fromEvent($("#temperature"), 'input');
         tempInputSource.subscribe( event => {
             idealTemperature = $(event.target).val();
+            $("#temperature + output").text(idealTemperature);
         } );
 
         var costInputSource = Rx.Observable.fromEvent( $("input[name=cost]"), 'change');
         costInputSource.subscribe( any => {
-            gradCost = $("input[name=cost]:checked").val();
+            perGradCost = $("input[name=cost]:checked").val();
         });
-
 
         Rx.Observable.merge(tempInputSource, costInputSource)
             .subscribe( stdCitiesQuery);
-
     }
 
 
@@ -42,11 +40,16 @@
 
     function forCity(cityId) {
         var satisfactionObservable = Rx.Observable.defer(()=>{
-                console.log("once again:" + cityId);
         return service.getSatisfaction(cityId);
-        }).retry(30);
+        }).retry(10);
+
         satisfactionObservable.subscribe(function(data){
             var tdElem = $(".results [data-cityname='"+cityId+"'] td.satisfaction");
+            if ( data> 500) {
+                tdElem.addClass("nogo")
+            } else {
+                tdElem.addClass("go")
+            }
             tdElem.text(data);
             tdElem.removeClass("spinning");
         } , function(a) {

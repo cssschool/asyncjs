@@ -38,3 +38,43 @@ body {
      }
    }
 }
+
+.results > table {
+  font-size: 1.5em;
+  text-shadow: 2px 2px 5px black;
+  > tbody > tr {
+    > td {
+      min-height: 30px;
+      padding: 0.5em;
+      background-repeat: no-repeat;
+      min-width: 260px;
+    }
+
+  }
+}
+
+td.satisfaction {
+  color: rgba(0,0,0,0.1);
+  position: relative;
+  min-width: 64px;
+  min-height: 64px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  &.go {
+    background-image: url('../img/smile.png');
+  }
+
+  &.nogo {
+    background-image: url('../img/no_entry.png');
+  }
+}
+
+td.spinning::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 10%;
+  top: 30%;
+  width: 40px;
+  height: 40px;
+}

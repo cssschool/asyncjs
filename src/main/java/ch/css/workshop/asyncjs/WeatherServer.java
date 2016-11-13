@@ -27,11 +27,11 @@ public class WeatherServer {
 
    private final CitiesService cityService = new CitiesService("/data/worldcitiespop.txt");
 
-   private final SlowWeatherService weatherService = new SlowWeatherService(cityService);
+   private final WeatherService weatherService = new WeatherService(cityService);
 
    private final TravelService travelService = new TravelService(cityService);
 
-   private final Destabilizer destabilizer = new Destabilizer(100, 0.05, 0.01);
+   private final Destabilizer destabilizer = new Destabilizer(100, 0.5, 0.00);
 
 
 

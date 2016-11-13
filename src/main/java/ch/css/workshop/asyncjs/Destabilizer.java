@@ -36,13 +36,16 @@ public class Destabilizer {
             Politician.beatAroundTheBush(() -> Thread.sleep(getPoissonRandom(standardDelay)));
          }
          if  (failureProbability > 0) {
-            if ( ThreadLocalRandom.current().nextDouble() < failureProbability ) {
-               throw new RuntimeException("just planned failure");
+            final double rnd = ThreadLocalRandom.current().nextDouble();
+            if ( rnd < failureProbability ) {
+               throw new RuntimeException("just planned failure: " + rnd);
             }
          }
-
-         if  (!(stuckProbability > 0 && ThreadLocalRandom.current().nextDouble() < stuckProbability )) {
+         final double rnd2 = ThreadLocalRandom.current().nextDouble();
+         if  (!(stuckProbability > 0 && rnd2 < stuckProbability )) {
             result.complete(val);
+         } else {
+            System.out.println("stuck:"+ rnd2);
          }
          return result;
       }, executor );
