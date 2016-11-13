@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.util.concurrent.*;
 
 public class SlowWeatherService {
-    private final ThreadPoolExecutor weatherExecutor = createExecutor();
 
     private final CitiesService citiesService;
 
@@ -18,17 +17,9 @@ public class SlowWeatherService {
         this.citiesService = citiesService;
     }
 
-    private ThreadPoolExecutor createExecutor() {
-        BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(
-                10);
-        ThreadPoolExecutor executorService = new ThreadPoolExecutor(2, 5, 30,
-                TimeUnit.SECONDS, queue,
-                new ThreadPoolExecutor.AbortPolicy());
-        return executorService;
-    }
+
 
     private BigDecimal getTemperatureForCity(final CityData city) {
-        System.out.println( "Temp for  City:"+ city.city+" lat:" + city.latitude);
         final double distToEq = Math.abs(90 - city.latitude) / 90.0;
         final double distSQ = Math.pow(distToEq, 0.3);
         final double temp = distSQ*60.0-30.0;
@@ -38,14 +29,12 @@ public class SlowWeatherService {
 
     public CompletionStage<BigDecimal> getTemperature(Long cityId, LocalDate date) {
         final CompletableFuture<BigDecimal> result = new CompletableFuture<>();
-        weatherExecutor.execute(() -> {
-                    citiesService.getCity(cityId).onSuccess((city) -> {
-                        city
-                                .map(this::getTemperatureForCity)
-                                .forEach(temp -> result.complete(temp));
-                    });
-                }
-        );
+
+        citiesService.getCity(cityId).map((option)-> option.map(this::getTemperatureForCity)).onComplete( distSearch -> {
+            distSearch.onSuccess( tempOption ->  result.complete(tempOption.getOrElseThrow(()->new IllegalArgumentException
+               (""+cityId))));
+        });
+
         return result;
     }
 

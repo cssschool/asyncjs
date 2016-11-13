@@ -2,6 +2,10 @@
 <head>
     <title>My weather</title>
     <link rel="stylesheet" type="text/css" href="css/spinner.css">
+
+    <link rel="stylesheet/less" type="text/css" href="less/styles.less" />
+
+    <script src="js/lib/less.js"></script>
 </head>
 <body>
 <section class="inputs">
@@ -17,10 +21,7 @@
         <input type="radio" name="cost" value="100"> 100 CHF
     </section>
 
-    <section>
-        <label fort="temperature">Temperature</label>
-        <input type="range" is="temperature">
-    </section>
+
 
     <section>
         <label for="city">City</label>
@@ -62,5 +63,6 @@
 <script src="js/lib/Rx.js"></script>
 <script src="js/weatherService.js"></script>
 <script src="js/weatherController.js"></script>
+
 </body>
 </html>

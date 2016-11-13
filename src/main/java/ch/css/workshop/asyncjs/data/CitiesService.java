@@ -38,7 +38,13 @@ public class CitiesService {
     }
 
     public Future<Option<CityData>> getCity(final long cityId) {
-        return citiesByKey.map( futur-> futur.map( m->m.get(cityId))).get();
+        return citiesByKey.map( futur-> futur.map( m->{
+            final long startTime = System.currentTimeMillis();
+            Option<CityData> result = m.get(cityId);
+            final long endTime = System.currentTimeMillis();
+
+            return result;
+        })).get();
     }
 
 }

@@ -1,8 +1,9 @@
-.inputs >input[data-state=normal] + .spinner {
+.inputs input[data-state=normal] + .spinner {
     opacity: 0;
+    display:inline-block;
 }
 
-.inputs >input[data-state=load] + .spinner, td.spinning {
+.inputs input[data-state=load] + .spinner, td.spinning {
     opacity: 1;
     color: blue;
     display:inline-block;

@@ -29,16 +29,10 @@ public class WeatherServer {
 
    private final SlowWeatherService weatherService = new SlowWeatherService(cityService);
 
-   private final Destabilizer destabilizer = new Destabilizer(10, 0.1, 0.1);
+   private final TravelService travelService = new TravelService(cityService);
 
-   private final Function<String, CompletionStage<List<Tuple2<Long, CityData>>>> slowCityService = destabilizer
-      .makeAsyncSlowAndUnstable(
-         (String search) -> CFConverter
-            .toCompletable(cityService.searchCities(search)));
+   private final Destabilizer destabilizer = new Destabilizer(0, 0.0, 0.0);
 
-   private final Function<Long, CompletionStage<String>> slowWeatherService = destabilizer
-      .makeAsyncSlowAndUnstable(
-         (Long cityId) -> weatherService.getTemperature(cityId, LocalDate.now()).thenApply(BigDecimal::toPlainString));
 
 
    public static void main(String... args) throws Exception {
@@ -65,7 +59,9 @@ public class WeatherServer {
 
    private ServerConfigBuilder setBaseDirectory(ServerConfigBuilder c) {
       final File baseDir = new File("src/main/webapp").getAbsoluteFile();
-      return c.baseDir(baseDir);
+
+      return c.baseDir(baseDir)
+         .threads(50);
    }
 
    private void registerJavaSlangMapper(RegistrySpec r) {
@@ -75,12 +71,15 @@ public class WeatherServer {
    private void defineServices(Chain services) {
       services.get("temperature/:id", ctx -> {
          final Long cityId = Long.parseLong(ctx.getPathTokens().get("id"));
-         System.out.println("getting temp for:" + cityId);
          final CompletionStage<String> result = this.slowWeatherService.apply(cityId);
          renderFuture(ctx, result);
+
       })
          .get("transport/:id", ctx -> {
-            ctx.render("200");
+            final Long cityId = Long.parseLong(ctx.getPathTokens().get("id"));
+            final CompletionStage<String> result = this.slowTravelService.apply(cityId);
+            renderFuture(ctx, result);
+
          })
          .get("cities/:search", ctx -> {
             final String search = ctx.getPathTokens().get("search");
@@ -99,5 +98,19 @@ public class WeatherServer {
    private Function<Object, String> getMapper(final Context ctx) {
       return obj -> Politician.beatAroundTheBush(() -> ctx.get(ObjectMapper.class).writer().writeValueAsString(obj));
    }
+
+   private final Function<String, CompletionStage<List<Tuple2<Long, CityData>>>> slowCityService = destabilizer
+      .makeAsyncSlowAndUnstable(
+         (String search) -> CFConverter
+            .toCompletable(cityService.searchCities(search)));
+
+   private final Function<Long, CompletionStage<String>> slowWeatherService = destabilizer
+      .makeAsyncSlowAndUnstable(
+         (Long cityId) -> weatherService.getTemperature(cityId, LocalDate.now()).thenApply(BigDecimal::toPlainString));
+
+   private final Function<Long, CompletionStage<String>> slowTravelService = destabilizer
+      .makeAsyncSlowAndUnstable(
+         (Long cityId) -> travelService.getTravelCost(cityId, LocalDate.now()).thenApply(BigDecimal::toPlainString));
+
 
 }

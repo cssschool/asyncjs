@@ -23,8 +23,6 @@ public class Destabilizer {
 
    private final ThreadPoolExecutor myExecutor = createExecutor();
 
-   //private final java.util.concurrent.ThreadLocalRandom r = new ThreadLocalRandom();
-
    public Destabilizer(long standardDelay, double failureProbability, double stuckProbability) {
       this.standardDelay = standardDelay;
       this.failureProbability = failureProbability;
@@ -48,7 +46,9 @@ public class Destabilizer {
                                                                              func) {
       return (INPUT inp) -> func.apply(inp).thenApply( val -> {
          if ( standardDelay > 0) {
+            System.out.println("start wait in" + Thread.currentThread().getId());
             Politician.beatAroundTheBush(() -> Thread.sleep(getPoissonRandom(standardDelay)));
+            System.out.println("end wait in" + Thread.currentThread().getId());
          }
          if  (failureProbability > 0) {
             if ( ThreadLocalRandom.current().nextDouble() < failureProbability ) {
@@ -63,8 +63,8 @@ public class Destabilizer {
 
    private ThreadPoolExecutor createExecutor() {
       BlockingQueue<Runnable> queue = new ArrayBlockingQueue<Runnable>(
-         10);
-      ThreadPoolExecutor executorService = new ThreadPoolExecutor(2, 5, 30,
+         100);
+      ThreadPoolExecutor executorService = new ThreadPoolExecutor(100, 150, 30,
          TimeUnit.SECONDS, queue,
          new ThreadPoolExecutor.AbortPolicy());
       return executorService;
