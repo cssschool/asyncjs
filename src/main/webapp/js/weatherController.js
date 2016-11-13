@@ -63,7 +63,6 @@
 
 
     function onInput() {
-
         var cityInput= $("#city");
         var inputSource = Rx.Observable.fromEvent(cityInput, 'input');
 
