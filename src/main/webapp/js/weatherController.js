@@ -34,11 +34,11 @@
     function stdCitiesQuery() {
         service.setParams( {idealTemperature:idealTemperature, perGradCost:perGradCost});
 
-        stdCities.forEach( city => forCity(city.id));
+        stdCities.forEach( city => queryAndDrawCity(city.id));
         drawCitiesTemplate(stdCities.map(c=>{c.satisfaction='?';return c;}));
     }
 
-    function forCity(cityId) {
+    function queryAndDrawCity(cityId) {
         var satisfactionObservable = Rx.Observable.defer(()=>{
         return service.getSatisfaction(cityId);
         }).retry(10);
@@ -65,7 +65,7 @@
     }
 
 
-    function onInput() {
+    function onCitySearchInput() {
         var cityInput= $("#city");
         var inputSource = Rx.Observable.fromEvent(cityInput, 'input');
 
@@ -77,17 +77,17 @@
 
         var citiesQuery = validSearchSource.flatMap ( cityName => {
                 console.log("looking for : " + cityName);
-        cityInput.attr('data-state','load');
-        return service.searchCities(cityName);
-    });
+                 cityInput.attr('data-state','load');
+             return service.searchCities(cityName);
+          });
 
-        var subscription = citiesQuery.subscribe(
+        citiesQuery.subscribe(
             function (cities) {
 
                 var fullData = cities.map( function(cityIn) {
                     var cityId = cityIn[0];
                     var cityData = cityIn[1];
-                    forCity(cityId);
+                    queryAndDrawCity(cityId);
                     cityData.satisfaction =  "?";
                     cityData.id =  cityId;
                     return cityData;
@@ -103,11 +103,10 @@
             function () {
                 console.log('Completed');
             });
-
     }
 
     stdCitiesQuery();
-    onInput();
+    onCitySearchInput();
     onChangedInputs();
 
 }(weatherService));
