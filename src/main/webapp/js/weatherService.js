@@ -1,4 +1,10 @@
 var weatherService = (function () {
+    var params= {
+        idealTemperature : 21,
+        perGradCost : 20
+    };
+
+
 
     function getTemperature(cityId) {
         var result = new Promise(
@@ -34,8 +40,8 @@ var weatherService = (function () {
                 var temp = parseFloat(values[0]);
                 var transp = parseInt(values[1],10);
 
-                var tempDiff = Math.abs(25.5 - temp);
-                return  tempDiff*50 + transp;
+                var tempDiff = Math.abs(params.idealTemperature - temp);
+                return  tempDiff*params.perGradCost + transp;
         });
 
     }
@@ -52,11 +58,16 @@ var weatherService = (function () {
         return result;
     }
 
+    function setParams( p ) {
+        params = p;
+    }
+
     return {
         searchCities: searchCities,
         getTemperature: getTemperature,
         getTransport: getTransport,
-        getSatisfaction: getSatisfaction
+        getSatisfaction: getSatisfaction,
+        setParams : setParams
     };
 
 }());
