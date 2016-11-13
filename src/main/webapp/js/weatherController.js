@@ -5,11 +5,11 @@
 
     var stdCities = [
         {id: '635499', city:"London"},
-       /* {id: '1480982', city:"Warsaw"},
+        {id: '1480982', city:"Warsaw"},
         {id: '99363', city:"Rome"},
         {id: '1636821', city:"Moscow"},
         {id: '607047', city:"Paris"},
-        {id: '651950', city:"Athenes"}*/
+        {id: '651950', city:"Athenes"}
     ];
 
     $(".results").html(tim("resultTable", {cities: []}));
