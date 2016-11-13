@@ -84,7 +84,7 @@
                 var fullData = cities.map( function(cityIn) {
                     var cityId = cityIn[0];
                     var cityData = cityIn[1];
-                    drawCity(cityId);
+                    forCity(cityId);
                     cityData.satisfaction =  "?";
                     cityData.id =  cityId;
                     return cityData;
