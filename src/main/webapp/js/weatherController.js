@@ -12,29 +12,39 @@
 
     var validSearchSource  = cityNameSource.filter(  cityName=> cityName.length > 3);
 
-    var subscription = validSearchSource.subscribe(
-        function (cityName) {
-            console.log("looking for : " + cityName);
-            cityInput.attr('data-state','load');
-            service.searchCities(cityName)
-                .then(function (cities) {
-                    var fullData = cities.map( function(cityIn) {
-                        var cityId = cityIn[0];
-                        var cityData = cityIn[1];
-                        service.getSatisfaction(cityId).then( function(data){
-                            var tdElem = $(".results [data-cityname='"+cityId+"'] td.satisfaction");
-                            tdElem.text(data);
-                            tdElem.removeClass("spinning");
-                        });
-                        cityData.satisfaction =  "?";
-                        cityData.id =  cityId;
-                        return cityData;
-                    });
-                    var result = tim("resultTable", {cities: fullData});
+    var citiesQuery = validSearchSource.flatMap ( cityName => {
+        console.log("looking for : " + cityName);
+        cityInput.attr('data-state','load');
+        return service.searchCities(cityName);
+    });
 
-                    $(".results").html(result);
-                    cityInput.attr('data-state','normal');
+
+    var subscription = citiesQuery.subscribe(
+        function (cities) {
+
+                var fullData = cities.map( function(cityIn) {
+                    var cityId = cityIn[0];
+                    var cityData = cityIn[1];
+                    var satisfactionObservable = Rx.Observable.defer(()=>{
+                            console.log("once again:" + cityId);
+                            return service.getSatisfaction(cityId);
+                    }).retry(30);
+                    satisfactionObservable.subscribe(function(data){
+                        var tdElem = $(".results [data-cityname='"+cityId+"'] td.satisfaction");
+                        tdElem.text(data);
+                        tdElem.removeClass("spinning");
+                    } , function(a) {
+                        console.log("on error?" + a);
+                    } );
+
+                    cityData.satisfaction =  "?";
+                    cityData.id =  cityId;
+                    return cityData;
                 });
+                var result = tim("resultTable", {cities: fullData});
+
+                $(".results").html(result);
+                cityInput.attr('data-state','normal');
         },
         function (err) {
             console.log('Error: %s', err);
@@ -42,7 +52,6 @@
         function () {
             console.log('Completed');
         });
-
 
 }(weatherService));
 

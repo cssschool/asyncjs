@@ -5,6 +5,8 @@ var weatherService = (function () {
             function (resolve, reject) {
                 $.get("/services/temperature/" + cityId).done(function (data) {
                     resolve(data);
+                }).fail( function() {
+                    reject("oops");
                 });
             }
         );
@@ -17,6 +19,8 @@ var weatherService = (function () {
             function (resolve, reject) {
                 $.get("/services/transport/" + cityId).done(function (data) {
                     resolve(data);
+                }).fail( function() {
+                    reject("oops");
                 });
             }
         );

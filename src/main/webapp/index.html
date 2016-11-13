@@ -5,8 +5,30 @@
 </head>
 <body>
 <section class="inputs">
-    <label for="city">City</label>
-    <input type="text" id="city" data-state="normal"><div class="spinner">&nbsp;</div>
+    <section>
+        <label for="temperature">Temperature</label>
+        <input type="range" id="temperature" min="-20" max="40" value="21">
+    </section>
+
+    <section>
+        <label>Add Cost for 1'C</label>
+        <input type="radio" name="cost" value="20"> 20 CHF
+        <input type="radio" name="cost" value="50"> 50 CHF
+        <input type="radio" name="cost" value="100"> 100 CHF
+    </section>
+
+    <section>
+        <label fort="temperature">Temperature</label>
+        <input type="range" is="temperature">
+    </section>
+
+    <section>
+        <label for="city">City</label>
+        <input type="text" id="city" data-state="normal">
+        <div class="spinner">&nbsp;</div>
+    </section>
+
+
 </section>
 <section class="results">
     <table>
@@ -30,6 +52,7 @@
     </tr>
     {{/cities}}
  </table>
+
 </script>
 
 <script src="js/lib/zepto.js"></script>
