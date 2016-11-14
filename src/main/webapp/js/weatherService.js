@@ -6,6 +6,7 @@ var weatherService = (function () {
 
     $.ajaxSettings.timeout = 20000;
 
+    
     function getTemperature(cityId) {
         $.get("/services/temperature/" + cityId).done(function (data) {
             console.log("temperatur is : " + data);
@@ -20,15 +21,20 @@ var weatherService = (function () {
         return 400;//TODO: remove hardcoded
     }
 
-    function getSatisfaction(cityId) {
+    function getSatisfaction(cityId, callback) {
+
         /**
          *  Write here calculation
          *  satifsaction = abs(temperatue-idealTemperature) * perGradCost + transport
          *
          */
-        var result =  450; //HARDCODED
-        console.log("result=" + result);
-        return result;
+        
+        setTimeout( function() {
+            var result =  420; //HARDCODED
+            console.log("result=" + result);
+            callback(result);
+        },100);
+        
     }
 
     function searchCities(search) {

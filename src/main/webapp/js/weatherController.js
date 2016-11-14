@@ -12,6 +12,13 @@
         {id: '651950', city:"Athenes"}
     ];
 
+    /** init */
+    stdCities.forEach(c=>{
+        c.satisfaction= '?';
+        c.goClass = "nogo";
+    });
+
+
     $(".results").html(tim("resultTable", {cities: []}));
 
     /**
@@ -38,10 +45,13 @@
      */
     function stdCitiesQuery() {
         service.setParams( {idealTemperature:idealTemperature, perGradCost:perGradCost});
-        drawCitiesTemplate(stdCities.map(c=>{
-            c.satisfaction=service.getSatisfaction(c.id);
-            c.goClass = c.satisfaction > 500 ? "nogo" : "go";
-        return c;}));
+        stdCities.forEach(c=>{
+                service.getSatisfaction(c.id, function(satisf) {
+                c.satisfaction= satisf;
+                c.goClass = c.satisfaction > 500 ? "nogo" : "go";
+                drawCitiesTemplate(stdCities);
+            });
+        });
     }
 
     function drawCitiesTemplate(fullData) {
