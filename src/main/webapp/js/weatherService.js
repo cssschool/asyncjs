@@ -21,11 +21,12 @@ var weatherService = (function () {
     }
 
     function getSatisfaction(cityId) {
-        var temp = getTemperature(cityId);
-        var transp = getTransport(cityId);
-        var tempDiff = Math.abs(params.idealTemperature - temp);
-
-        var result =   (tempDiff*params.perGradCost + transp).toFixed(2);
+        /**
+         *  Write here calculation
+         *  satifsaction = abs(temperatue-idealTemperature) * perGradCost + transport
+         *
+         */
+        var result =  450; //HARDCODED
         console.log("result=" + result);
         return result;
     }
