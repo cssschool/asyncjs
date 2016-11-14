@@ -31,7 +31,7 @@ public class WeatherServer {
 
    private final TravelService travelService = new TravelService(cityService);
 
-   private final Destabilizer destabilizer = new Destabilizer(100, 0.5, 0.00);
+   private final Destabilizer destabilizer = new Destabilizer(0, 0.0, 0.00);
 
 
 

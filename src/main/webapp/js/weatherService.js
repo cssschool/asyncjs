@@ -7,58 +7,31 @@ var weatherService = (function () {
     $.ajaxSettings.timeout = 20000;
 
     function getTemperature(cityId) {
-        var result = new Promise(
-            function (resolve, reject) {
-                $.get("/services/temperature/" + cityId).done(function (data) {
-                    resolve(data);
-                }).fail( function() {
-                    reject("oops");
-                });
-            }
-        );
-        return result;
-
+        $.get("/services/temperature/" + cityId).done(function (data) {
+            console.log("temperatur is : " + data);
+        });
+        return 15.5;//TODO: remove hardcoded
     }
 
     function getTransport(cityId) {
-        var result = new Promise(
-            function (resolve, reject) {
-                $.get("/services/transport/" + cityId).done(function (data) {
-                    resolve(data);
-                }).fail( function() {
-                    reject("oops");
-                });
-            }
-        );
-        return result;
+        $.get("/services/transport/" + cityId).done(function (data) {
+            console.log("transport is : " + data);
+        });
+        return 400;//TODO: remove hardcoded
     }
 
     function getSatisfaction(cityId) {
-        return Promise
-            .all( [getTemperature(cityId), getTransport(cityId)])
-            .then( function(values) {
-                var temp = parseFloat(values[0]);
-                var transp = parseInt(values[1],10);
+        var temp = getTemperature(cityId);
+        var transp = getTransport(cityId);
+        var tempDiff = Math.abs(params.idealTemperature - temp);
 
-                var tempDiff = Math.abs(params.idealTemperature - temp);
-                console.log("ed:"+ tempDiff);
-                var result =   (tempDiff*params.perGradCost + transp).toFixed(2);
-                console.log("res:"+ result);
-                return result;
-        });
-
+        var result =   (tempDiff*params.perGradCost + transp).toFixed(2);
+        console.log("result=" + result);
+        return result;
     }
 
     function searchCities(search) {
-        var result = new Promise(
-            function (resolve, reject) {
-                $.get("/services/cities/" + search).done(function (data) {
-                    console.log("got:" + data);
-                    resolve(JSON.parse(data));
-                });
-            }
-        );
-        return result;
+        return $.get("/services/cities/" + search);
     }
 
     function setParams( p ) {
