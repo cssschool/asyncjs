@@ -6,7 +6,6 @@ var weatherService = (function () {
 
     $.ajaxSettings.timeout = 20000;
 
-    
     function getTemperature(cityId) {
         $.get("/services/temperature/" + cityId).done(function (data) {
             console.log("temperatur is : " + data);
