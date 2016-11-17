@@ -61,7 +61,7 @@ public class WeatherServer {
       final File baseDir = new File("src/main/webapp").getAbsoluteFile();
 
       return c.baseDir(baseDir)
-         .threads(1000)
+         .threads(8)
               .development(false);
    }
 

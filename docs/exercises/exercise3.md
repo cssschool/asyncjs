@@ -10,7 +10,7 @@ src/main/webapp/js/weatherService.js
 Solve problem from exercise2 using promises.
 
 # Hint
-Try to use Promise.all() - that will be reolved when both parts are resolved.
+Try to use Promise.all() - that will be resolved when both parts are resolved.
 
 
 

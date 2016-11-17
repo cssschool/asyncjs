@@ -32,7 +32,8 @@ We assume that acceptable cost is 500CHF.
   Number should be as fallows:
    = |idealTemperaure - PredictedTemperatureInCity| * costPerGrade + travelCost
    
-   
+  #Hint
+   It might be tough.
   
   
   

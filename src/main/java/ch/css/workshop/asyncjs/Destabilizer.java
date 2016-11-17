@@ -18,6 +18,8 @@ public class Destabilizer {
 
    private final ThreadPoolExecutor executor = createExecutor();
 
+   private final ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(4);
+
    public Destabilizer(long standardDelay, double failureProbability, double stuckProbability) {
       this.standardDelay = standardDelay;
       this.failureProbability = failureProbability;
@@ -32,31 +34,42 @@ public class Destabilizer {
       return (INPUT inp) -> func.apply(inp).thenComposeAsync( val -> {
          final CompletableFuture<RESULT> result = new CompletableFuture<>();
 
+
+
          if ( standardDelay > 0) {
-            Politician.beatAroundTheBush(() -> Thread.sleep(getPoissonRandom(standardDelay)));
-         }
-         if  (failureProbability > 0) {
-            final double rnd = ThreadLocalRandom.current().nextDouble();
-            if ( rnd < failureProbability ) {
-               throw new RuntimeException("just planned failure: " + rnd);
-            }
-         }
-         final double rnd2 = ThreadLocalRandom.current().nextDouble();
-         if  (!(stuckProbability > 0 && rnd2 < stuckProbability )) {
-            result.complete(val);
+            scheduler.schedule(()->{
+               resolve(val, result);
+            }, standardDelay, TimeUnit.MILLISECONDS);
+
          } else {
-            System.out.println("stuck:"+ rnd2);
+            resolve(val, result);
          }
+
+
          return result;
       }, executor );
    }
 
+   private <RESULT> void resolve(RESULT val, CompletableFuture<RESULT> result) {
+      if  (failureProbability > 0) {
+         final double rnd = ThreadLocalRandom.current().nextDouble();
+         if ( rnd < failureProbability ) {
+            throw new RuntimeException("just planned failure: " + rnd);
+         }
+      }
+      final double rnd2 = ThreadLocalRandom.current().nextDouble();
+      if  (!(stuckProbability > 0 && rnd2 < stuckProbability )) {
+         result.complete(val);
+      } else {
+         System.out.println("stuck:"+ rnd2);
+      }
+   }
 
 
    private ThreadPoolExecutor createExecutor() {
       BlockingQueue<Runnable> queue = new ArrayBlockingQueue<>(
          20);
-      ThreadPoolExecutor executorService = new ThreadPoolExecutor(100, 1050, 30,
+      ThreadPoolExecutor executorService = new ThreadPoolExecutor(4, 8 , 30,
          TimeUnit.SECONDS, queue,
          new ThreadPoolExecutor.CallerRunsPolicy());
       return executorService;
