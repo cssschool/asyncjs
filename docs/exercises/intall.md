@@ -5,7 +5,7 @@
 3. go to class src/main/java/ch.css.workshop.asyncjs.WeatherServer.java
 4. Start server (it has main methnod)
 
-5. navigate browset to http://localhost:5050
+5. navigate browset to http://localhost:5050/files/index.html
 
 
 
