@@ -31,7 +31,7 @@ public class WeatherServer {
 
    private final TravelService travelService = new TravelService(cityService);
 
-   private final Destabilizer destabilizer = new Destabilizer(100, 0.5, 0.00);
+   private final Destabilizer destabilizer = new Destabilizer(200, 0.0, 0.0);
 
 
 
@@ -61,7 +61,7 @@ public class WeatherServer {
       final File baseDir = new File("src/main/webapp").getAbsoluteFile();
 
       return c.baseDir(baseDir)
-         .threads(1000)
+         .threads(4)
               .development(false);
    }
 
