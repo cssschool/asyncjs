@@ -20,20 +20,23 @@ var weatherService = (function () {
         return 400;//TODO: remove hardcoded
     }
 
-    function getSatisfaction(cityId, callback) {
+    function getSatisfaction(cityId) {
+        var result = new Promise( function(resolve, reject) {
+                /**
+                 *  Write here calculation
+                 *  satifsaction = abs(temperatue-idealTemperature) * perGradCost + transport
+                 *
+                 */
+                setTimeout( function() {
+                    var result =  421; //HARDCODED
+                    console.log("result=" + result);
+                    resolve(result);
+                },100);
+            }
+        );
 
-        /**
-         *  Write here calculation
-         *  satifsaction = abs(temperatue-idealTemperature) * perGradCost + transport
-         *
-         */
-        
-        setTimeout( function() {
-            var result =  420; //HARDCODED
-            console.log("result=" + result);
-            callback(result);
-        },100);
-        
+        return result;
+
     }
 
     function searchCities(search) {

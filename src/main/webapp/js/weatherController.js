@@ -46,7 +46,7 @@
     function stdCitiesQuery() {
         service.setParams( {idealTemperature:idealTemperature, perGradCost:perGradCost});
         stdCities.forEach(c=>{
-                service.getSatisfaction(c.id, function(satisf) {
+                service.getSatisfaction(c.id).then(function(satisf) {
                 c.satisfaction= satisf;
                 c.goClass = c.satisfaction > 500 ? "nogo" : "go";
                 drawCitiesTemplate(stdCities);

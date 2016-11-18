@@ -13,4 +13,7 @@ Solve problem from exercise2 using promises.
 Try to use Promise.all() - that will be resolved when both parts are resolved.
 
 
+# Promises
+You create promise with:
+
 
