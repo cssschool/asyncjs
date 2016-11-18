@@ -55,8 +55,6 @@
         } , function(a) {
             console.log("on error?" + a);
         } );
-
-
     }
 
     function drawCitiesTemplate(fullData) {
