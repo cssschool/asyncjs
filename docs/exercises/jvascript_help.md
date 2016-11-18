@@ -12,7 +12,7 @@ var myObjectWithSomeProperty = {
    };
 var myArray = [1, 2, 3, 4];
 ```
-## Use objects
+## Objects
 There are no classes. Only objects!
 
 ``` var myEmptyObject = {};```
@@ -26,7 +26,9 @@ or
 or
 ``` var a = myObject['prop1']```
 
-Objects in JavaScripts are like HashMap in Java. 
+*Objects in JavaScripts are like Map in Java.*
+ 
+ 
 ### Warning
 Never forget putting ```var``` before your variable.
 Otherwise You will get punished in the most cruel way:
@@ -55,6 +57,27 @@ Or (ECMA 6)
 var fun1 = (arg1, arg2) => 'whatever' + (arg1 + 7*arg2);
 ```
 
+Function is also an object.
+
+### Pitfalls
+1. There is no overloading.
+ ```
+ function a(arg1) {
+ }
+ 
+ function a(arg1,arg2) {
+  }
+ 
+```
+will create only one function that uses  both arguments.
+
+2. You can declare that a function has 2 parameters, you can still call it
+with 5 parameters and ... you can even use those 5 in body.
+(_JavaScript does not ask silly questions. JavaScript understands_)
+
+3. Beware of *this*
+*this* keyword exists in JavaScript but behaves very unintuitive. It is best to avoid it unless you read
+exactly how it works.
 
 
 ## Arrays
